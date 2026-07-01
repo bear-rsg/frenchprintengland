@@ -1,0 +1,50 @@
+@media (min-width: 992px) {
+
+    .display-large {
+        display: initial;
+    }
+
+    /* ---------- Navigation ---------- */
+
+    .navbar-brand {
+        padding-left: 0.3em;
+    }
+
+    .nav-link {
+        margin-left: 1em;
+        margin-right: 1em;
+        margin-top: 0.2em;
+    }
+
+    .nav-link.active {
+        border-bottom: 0.15rem solid #8e5513;
+    }
+
+    /* ---------- Main ---------- */
+
+    main {
+        margin-top: 3em;
+    }
+
+    /* ---------- Welcome ---------- */
+
+    #welcome-banner {
+        height: calc(70vh - 3em);
+        min-height: 25em;
+    }
+
+    /* ---------- Art Objects: Detail ---------- */
+
+    #artobject-detail-image {
+        width: 30em;
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    #artobject-detail-data {
+        width: calc(100% - 31em);
+        display: inline-block;
+        vertical-align: top;
+    }
+
+}

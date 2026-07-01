@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static settings_value %}
+
+{% block main %}
+
+    <div id="welcome-banner"></div>
+
+    <section class="container">
+        <h2>Welcome</h2>
+        <p>
+            ...
+        </p>
+    </section>
+
+    <section id="welcome-footer">
+        <!-- Content -->
+        <div id="welcome-footer-content" class="container">
+
+            <div id="welcome-footer-content-logos">
+                <a href="https://www.birmingham.ac.uk" target="_blank"><img src="{% static 'images/logos/logo-uob.png' %}" alt="Birmingham University logo"></a>
+                <a href="https://www.leverhulme.ac.uk" target="_blank"><img src="{% static 'images/logos/logo-leverhulmetrust.jpg' %}" alt="Leverhulme Trust logo"></a>
+            </div>
+
+            <div id="welcome-footer-content-text">
+                <p>
+                    This website has been developed for the <em>French-Language Print Publications in England to 1685</em>
+                    <br>
+                    research project led by <a href="https://www.birmingham.ac.uk/staff/profiles/english/auger-peter" target="_blank">Dr Peter Auger </a> at the <a href="https://www.birmingham.ac.uk/" target="_blank">University of Birmingham</a>
+                </p>
+                <p>
+                    The project is funded by a <a href="https://www.leverhulme.ac.uk/">Leverhulme Trust</a> grant
+                </p>
+                <p>
+                    Contact: <a href="mailto:{% settings_value 'MAIN_CONTACT_EMAIL' %}">{% settings_value 'MAIN_CONTACT_EMAIL' %}</a>
+                </p>
+                <p>
+                    <a href="https://www.birmingham.ac.uk/privacy/index.aspx" target="_blank">Privacy</a> |
+                    <a href="https://www.birmingham.ac.uk/legal/index.aspx" target="_blank">Legal</a> |
+                    <a href="https://www.birmingham.ac.uk/university/governance/policies-regs/information/index.aspx" target="_blank">Freedom of Information</a> |
+                    <a href="{% url 'general:cookies' %}">Cookies</a> |
+                    <a href="https://accessibility.bear.bham.ac.uk/" target="_blank">Accessibility</a>
+                    {% if user.is_staff %}
+                        | <a href="{% url 'admin:index' %}">Admin</a>
+                    {% endif %}
+                </p>
+                <p>
+                    © University of Birmingham {% now "Y" %}
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}

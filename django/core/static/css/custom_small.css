@@ -1,0 +1,54 @@
+@media (max-width: 991px) {
+
+    .display-small {
+        display: initial;
+    }
+
+    /* ---------- Navigation ---------- */
+
+    nav {
+        text-align: center;
+    }
+
+    .navbar-brand {
+        font-size: 1rem;
+        width: 100%;
+    }
+
+    #navbar-brand-1 {
+        white-space: initial;
+    }
+
+    .nav-item {
+        margin-top: 1em;
+    }
+
+    .nav-item:last-of-type {
+        margin-bottom: 1em;
+    }
+
+    .navbar-toggler {
+        color: #8e5513;
+        font-size: 1.7em;
+        margin: 0 auto;
+        display: block;
+    }
+
+    #navbarNavDropdown {
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 12px 24px;
+    }
+
+    /* ---------- Main ---------- */
+
+    main {
+        margin-top: 3em;
+        min-height: calc(100vh - 3em);
+    }
+
+    /* ---------- Welcome ---------- */
+
+    #welcome-banner {
+        height: 20em;
+    }
+
+}

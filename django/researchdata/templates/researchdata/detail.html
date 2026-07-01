@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container">
+
+    <section>
+        {% if user.is_staff %}
+            <div class="viewinadmindashboard-link-container">
+                <a href="{{ admin_url }}" class="viewinadmindashboard-link">
+                    View in Dashboard <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        {% endif %}
+
+        <h2>{{ object }}</h2>
+
+        <div>
+            ...
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

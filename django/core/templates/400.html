@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load settings_value %}
+
+{% block main %}
+
+<div>
+    <h2>Sorry we don't understand that request</h2>
+    {% include "snippets/error-content.html" %}
+    <div class="errorpage-code">
+        Error code: 400
+    </div>
+</div>
+
+{% endblock %}

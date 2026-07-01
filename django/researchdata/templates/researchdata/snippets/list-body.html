@@ -1,0 +1,37 @@
+{# list_type_for_model is one of 'text' 'image' 'imagecompact' and is defined in the view's get_context_data or passed as a variable via 'with' when calling this template snippet #}
+<section class="list-body list-body-type-{{ list_type }}">
+    {% for object in object_list %}
+        <!-- Set the URL based on the main model supplied to this page -->
+        <a href="{{ object.url_detail }}" class="list-body-item">
+
+            <!-- Text -->
+            <div class="list-body-item-text">
+                <div class="list-body-item-text-title">
+                    {{ object.list_title }}
+                </div>
+            </div>
+
+        </a>
+    {% empty %}
+        <div class="list-body-empty">
+            <div class="list-body-empty-title">
+                No records found
+            </div>
+            <div class="list-body-empty-details">
+                This may be because no data of this type exists yet or because your search criteria is too narrow
+            </div>
+        </div>
+    {% endfor %}
+</section>
+
+<!-- JS -->
+<script>
+$(document).ready(function() {
+    // Show/hide each imagecompact item's text on hover
+    $('.list-body-item').hover(function(){
+        $(this).find('.list-body-item-text').addClass('active');
+    }, function(){
+        $(this).find('.list-body-item-text').removeClass('active');
+    });
+});
+</script>

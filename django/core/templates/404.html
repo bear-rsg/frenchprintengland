@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load settings_value %}
+
+{% block main %}
+
+<div>
+    <h2>We couldn't find that page</h2>
+    {% include "snippets/error-content.html" %}
+    <div class="errorpage-code">
+        Error code: 404
+    </div>
+</div>
+
+{% endblock %}

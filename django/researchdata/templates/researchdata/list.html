@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% load static %}
+{% load pagination_go_to_page %}
+
+{% block main %}
+
+<section id="list-head" class="container compact">
+
+
+    <!-- List Options -->
+    <div class="list-options">
+        
+        <!-- Form element has no action attribute, so that it submits to the same page -->
+        <form method="GET" class="form-group" id="list-options-form">
+            <!-- Search -->
+            <div class="list-options-search row">
+                <div class="col-12">
+                    <div class="input-group">
+                        <!-- Search textbox -->
+                        <input type="text" class="form-control" name="search" title="search" id="list-options-search-input" placeholder="Search text">
+                        <!-- Search button -->
+                        <div class="input-group-append">
+                            <button type="submit" value="Search" class="btn btn-primary" title="search-btn" id="list-options-search-button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div id="list-options-filters">
+                <div>Filters:</div>
+                {% for f in filters %}
+                    <div class="list-options-filters-filter">
+                        <label for="{{ f.filter_id }}">{{ f.filter_name }}</label>
+                        <select id="{{ f.filter_id }}" title="{{ f.filter_name }}" name="{{ f.filter_id }}">
+                            {% include 'researchdata/snippets/select-default.html' %}
+                            {% for o in f.filter_options %}
+                                <option value="{% if f.valueSameAsText %}{{ o }}{% else %}{{ o.id }}{% endif %}">{{ o }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Sort -->
+            <div id="list-options-sort">
+                <label>Sort by:</label>
+                <!-- Sort by -->
+                <select id="list-options-sort-by" name="sort_by">
+                        <option value="first_name">First Name</option>
+                        <option value="last_name">Last Name</option>
+                        <option value="year_of_birth">Year of Birth</option>
+                        <option value="year_of_death">Year of Death</option>
+                        <option value="year_active_start">Year Active Start</option>
+                        <option value="year_active_end">Year Active End</option>
+                        <option value="count_letterperson">Number of Letters</option>
+                </select>
+                <!-- Sort direction -->
+                <select id="list-options-sort-direction" name="sort_direction">
+                    <option value="">Asc (A-Z, 0-9)</option>
+                    <option value="-">Desc (Z-A, 9-0)</option>
+                </select>
+            </div>
+
+            <!-- Links -->
+            <div id="list-options-links">
+                <span id="list-options-links-reset" class="reset-form"><i class="fas fa-redo"></i> Reset</span>
+            </div>
+
+            {% block list_options_transcribe %}{% endblock %}
+
+            <!-- Views -->
+            <div id="list-options-views">
+                <label>View:</label>
+                <i id="list-options-views-grid" class="fas fa-th" title="Grid view"></i>
+                <i id="list-options-views-list" class="fas fa-bars" title="List view"></i>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+<!-- List Body -->
+<section id="list-body" class="container compact">
+    {% for object in object_list %}
+        <div class="list-body-item">
+            <a href="{% url 'researchdata:text-detail' object.id %}" class="list-body-item-link">
+                <div class="list-body-item-title">{{ object }}</div>
+                <div class="list-body-item-details">
+                    <label>Label:</label><span>data...</span>
+                </div>
+            </a>
+            <!-- Search Meta -->
+            {% if search_meta %}
+                <div class="list-body-item-searchmeta">
+                    <div>Search criteria found in:</div>
+                    <!-- Loop through object ids in search_meta dict to find matching id to current object -->
+                    {% for s in search_meta %}
+                        {% if s.id == object.id %}
+                            <!-- Within the matching object, loop through list of search_meta key value pairs -->
+                            {% for key, value in s.items %}
+                                <!-- Ignore id and only show if count is at least 1 -->
+                                {% if key != "id" and value.count > 0 %}
+                                    <a href="/database/{{ object.breadcrumbs_list.url }}/{% if object.code %}{{ object.code }}{% else%}{{ object.id }}{% endif %}/{{ value.url_parameters }}"><span>{{ key }}</span> ({{ value.count }} occurrence{% if value.count != 1 %}s{% endif %})</a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% empty %} 
+        <div id="list-body-empty">
+            <div id="list-body-empty-title">
+                No records found.
+            </div>
+            <div id="list-body-empty-details">
+                Try expanding your search criteria or <strong class="reset-form">resetting the search</strong> to view all items.
+            </div>
+        </div>
+    {% endfor %}
+</section>
+
+<!-- List Pagination, if there are multiple pages -->
+{% if page_obj.paginator.num_pages > 1 %}
+    <section id="list-pagination" class="container compact">
+
+        <div class="list-pagination-section{% if page_obj.has_previous == False %} disabled{% endif %}">
+            <!-- First Page -->
+            <div class="list-pagination-action">
+                {% if page_obj.has_previous %}
+                    <a class="fas fa-angle-double-left" href="{% pagination_go_to_page page_number=1 %}" title="First"></a><label>First</label>
+                {% endif %}
+            </div>
+            <!-- Previous Page -->
+            <div class="list-pagination-action">
+                {% if page_obj.has_previous %}
+                    <a class="fas fa-angle-left" href="{% pagination_go_to_page page_number=page_obj.previous_page_number %}" title="Previous"></a><label>Previous</label>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="list-pagination-section">
+            <!-- Current page info -->
+            <span class="list-pagination-current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </div>
+
+        <div class="list-pagination-section{% if page_obj.has_next == False %} disabled{% endif %}">
+            <!-- Next Page -->
+            <div class="list-pagination-action">
+                {% if page_obj.has_next %}
+                    <a class="fas fa-angle-right" href="{% pagination_go_to_page page_number=page_obj.next_page_number %}" title="Next"></a><label>Next</label>
+                {% endif %}
+            </div>
+            <!-- Last Page -->
+            <div class="list-pagination-action">
+                {% if page_obj.has_next %}
+                    <a class="fas fa-angle-double-right" href="{% pagination_go_to_page page_number=page_obj.paginator.num_pages %}" title="Last"></a><label>Last</label>
+                {% endif %}
+            </div>
+        </div>
+
+    </section>
+{% endif %}
+
+<!-- JS -->
+<script>
+$(document).ready(function() {
+
+    function getCookie(name) {
+        var c_list = document.cookie.split("; "), i = 0, c, c_name, c_value;
+        for (i = 0; i < c_list.length; i++) {
+            c = c_list[i].split('=');
+            c_name = c[0];
+            c_value = c[1];
+            if (c_name === name) return c_value;
+        }
+        return null;
+    }
+
+    // Switch views: grid vs list
+    var cookieViewKey = 'socialbodiesListOptionsView';
+    $('#list-options-views i').on('click', function(){
+        var view = $(this).attr('id').slice(-4); // either 'grid' or 'list'
+
+        // Set the cookie
+        document.cookie = cookieViewKey + "=" + view + "; expires=Mon, 31 Dec 2050 23:59:59 GMT; path=/; Secure;";
+
+        // Set the view of the list items
+        // listview
+        if (view == 'list') $('.list-body-item').addClass('listview').removeClass('gridview');
+        // gridview
+        else $('.list-body-item').addClass('gridview').removeClass('listview');
+
+        // Toggle active state of view button
+        $('#list-options-views i').removeClass('active');
+        $('#list-options-views-' + view).addClass('active');
+    });
+    // Trigger on page load - either from cookie if exists, or default to grid view if no cookie
+    if (getCookie(cookieViewKey) !== null) $('#list-options-views-' + getCookie(cookieViewKey)).trigger('click');
+    else $('#list-options-views-grid').trigger('click');
+
+    // Hide some filters on transcribe list page
+    isTranscribe = new URL(window.location.href).searchParams.get('transcribe');
+    if (isTranscribe == 1){
+        const filters = [
+            'filter_mm_letterperson__condition_specific_state',
+            'filter_mm_letterperson__emotion',
+            'filter_mm_letterperson__bodily_activity',
+            'filter_mm_letterperson__body_part'
+        ]
+        for (filter of filters) $('#' + filter).closest('.list-options-filters-filter').hide();
+    }
+
+    // Reset form
+    $('.reset-form').on('click', function(){
+        // Go to the current URL but without any parameters (remove everything after ? in url)
+        window.location.replace(window.location.href.split('?')[0]);
+    });
+
+    // Submit list options form on change of certain inputs
+    $('#list-options-sort-by, #list-options-sort-direction, #list-options-filters select').on('change', function(){
+        $('#list-options-form').submit();
+    });
+
+    // Fill form values from URL parameters
+    function setFieldValueFromUrl(formItemID, urlParameter) {
+        var value = new URL(window.location.href).searchParams.get(urlParameter);
+        if (value) $('#' + formItemID).val(value);
+    }
+    // Apply above function to all form fields:
+    // Search
+    setFieldValueFromUrl("list-options-search-input", "search");
+    // Sort
+    setFieldValueFromUrl("list-options-sort-by", "sort_by");
+    setFieldValueFromUrl("list-options-sort-direction", "sort_direction");
+    // Filters
+    new URL(window.location.href).searchParams.forEach(function(value, key){
+        // If key starts with 'filter_pre' (as defined in view get_context_data()) then it's a filter
+        if (key.startsWith('{{ filter_pre }}')) setFieldValueFromUrl(key, key);
+    });
+    // Transcribe
+    setFieldValueFromUrl("list-options-transcribe-value", "transcribe");
+});
+</script>
+
+{% endblock %}

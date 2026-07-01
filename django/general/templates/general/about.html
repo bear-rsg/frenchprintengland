@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load settings_value static %}
+
+{% block main %}
+
+<section class="container">
+    <h2>About</h2>
+
+    <h3>The Project</h3>
+    <p>
+        ...
+    </p>
+
+    <h3>The Team</h3>
+    <div class="team-member-name">
+        Peter Auger
+    </div>
+    <div class="team-member-role">
+        Principal Investigator
+    </div>
+    <img src="{% static 'images/team/peter-auger.jpg' %}" alt="Peter Auger" class="team-member-photo">
+    <p>
+        ...
+    </p>
+
+</section>
+
+{% endblock %}
