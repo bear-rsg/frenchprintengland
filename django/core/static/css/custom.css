@@ -170,8 +170,8 @@ nav {
     color: var(--color-primary);
 }
 
-.navbar-brand-1,
-.navbar-brand-2 {
+#navbar-brand-1,
+#navbar-brand-2 {
     background: white;
     color: var(--color-primary);
 }
