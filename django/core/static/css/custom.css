@@ -3,9 +3,9 @@
 
 html, body {
     /* Variables */
-    --color-primary: #8e5513;
-    --color-primary-dark: #70410b;
-    --color-primary-light: #f0a752;
+    --color-primary: #7B480F;
+    --color-primary-dark: #60380b;
+    --color-primary-light: #9f6018;
     --color-secondary: #F4FFE1;
     --color-secondary-dark: #b5bfa3;
     --color-secondary-light: #f8fbf2;
@@ -165,6 +165,7 @@ nav {
     font-size: 1.5em;
     letter-spacing: 0.1em;
     font-weight: 600;
+    background: white;
     color: var(--color-primary);
 }
 
