@@ -61,6 +61,7 @@ h2 {
     line-height: 1em;
     font-weight: 600;
     text-align: center;
+    background: white;
     color: var(--color-primary);
 }
 
@@ -165,6 +166,12 @@ nav {
     font-size: 1.5em;
     letter-spacing: 0.1em;
     font-weight: 600;
+    background: white;
+    color: var(--color-primary);
+}
+
+.navbar-brand-1,
+.navbar-brand-2 {
     background: white;
     color: var(--color-primary);
 }
