@@ -150,13 +150,15 @@ th {
 /* ---------- Navigation ---------- */
 
 nav {
-    background-color: white;
     vertical-align: middle;
+    background-color: white;
     color: var(--color-primary);
     font-family: "Cinzel", serif;
 }
 
 .navbar {
+    background-color: white;
+    color: var(--color-primary);
     padding: 0 0.5em;
 }
 
@@ -171,11 +173,15 @@ a.navbar-brand {
 
 .navbar-nav {
     letter-spacing: 0.05em;
+    background-color: white;
+    color: var(--color-primary);
 }
 
 .nav-link {
     font-weight: 600;
     font-size: 1.13em;
+    background-color: white;
+    color: var(--color-primary);
 }
 
 /* ---------- Main ---------- */
