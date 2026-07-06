@@ -33,18 +33,50 @@
         min-height: 25em;
     }
 
-    /* ---------- Art Objects: Detail ---------- */
+    /* ---------- List ---------- */
 
-    #artobject-detail-image {
-        width: 30em;
+    .list-options-filters-filter {
         display: inline-block;
-        vertical-align: top;
+        margin: 0.4em 0 0.7em 1em;
+        width: calc(25% - 1.3em);
     }
 
-    #artobject-detail-data {
-        width: calc(100% - 31em);
+    #list-options-views,
+    #list-options-links {
+        float: right;
+    }
+
+    #list-options-views {
+        margin-left: 3em;
+    }
+
+    .list-body-item {
+        margin: 1em;
         display: inline-block;
-        vertical-align: top;
+        width: calc(33% - 2em);
+    }
+
+    .list-body-item.gridview .list-body-item-link {
+        min-height: 10em;
+    }
+
+    #list-pagination {
+        white-space: nowrap;
+    }
+
+    .list-pagination-section {
+        white-space: normal;
+        width: 33%;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    /* ---------- Detail ---------- */
+
+    .viewinadmindashboard-link-container {
+        float: right;
+        width: fit-content;
+        padding-left: 2em;
     }
 
 }

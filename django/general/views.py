@@ -15,11 +15,11 @@ class AboutTemplateView(TemplateView):
     template_name = 'general/about.html'
 
 
-class TranscriptionsTemplateView(TemplateView):
+class DiscoverTemplateView(TemplateView):
     """
-    Class-based view to show the transcriptions template
+    Class-based view to show the discover template
     """
-    template_name = 'general/transcriptions.html'
+    template_name = 'general/discover.html'
 
 
 class ResourcesTemplateView(TemplateView):

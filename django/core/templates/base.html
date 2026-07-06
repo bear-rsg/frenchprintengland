@@ -66,6 +66,10 @@
                     <li class="nav-item">
                         <a class="nav-link{% if "/about/" in request.path %} active{% endif %}" href="{% url 'general:about' %}">About</a>
                     </li>
+                    <!-- About -->
+                    <li class="nav-item">
+                        <a class="nav-link{% if "/discover/" in request.path %} active{% endif %}" href="{% url 'general:discover' %}">Discover</a>
+                    </li>
                     <!-- Texts -->
                     <li class="nav-item">
                         <a class="nav-link{% if "/texts/" in request.path %} active{% endif %}" href="{% url 'researchdata:text-list' %}">Texts</a>
