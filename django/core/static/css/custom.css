@@ -3,9 +3,9 @@
 
 html, body {
     /* Variables */
-    --color-primary: #72430E;
-    --color-primary-dark: #60380b;
-    --color-primary-light: #9f6018;
+    --color-primary: #6D400D;
+    --color-primary-dark: #543109;
+    --color-primary-light: #844e11;
     --color-secondary: #F4FFE1;
     --color-secondary-dark: #b5bfa3;
     --color-secondary-light: #f8fbf2;
@@ -45,6 +45,8 @@ h4,
 h5,
 .team-member-name {
     font-family: "Cinzel", serif;
+    background: white;
+    color: var(--color-primary);
 }
 
 h1 {
@@ -61,8 +63,6 @@ h2 {
     line-height: 1em;
     font-weight: 600;
     text-align: center;
-    background: white;
-    color: var(--color-primary);
 }
 
 h3 {
@@ -72,7 +72,6 @@ h3 {
     margin: 3em 0 0.5em 0;
     padding: 0.1em 0;
     width: fit-content;
-    color: var(--color-primary);
 }
 
 h4 {
@@ -161,7 +160,7 @@ nav {
     padding: 0 0.5em;
 }
 
-.navbar-brand {
+a.navbar-brand {
     display: inline-block;
     font-size: 1.5em;
     letter-spacing: 0.1em;
