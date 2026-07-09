@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
-from django.db.models.functions import Concat, Lower
-from django.db.models import CharField, Value, Q, Count, TextField
+from django.db.models.functions import Lower
+from django.db.models import CharField, Q, Count, TextField
 from django.urls import reverse
 from datetime import datetime
 from . import models
@@ -146,7 +146,6 @@ def sort(request, queryset, sort_by_default='id'):
                 return queryset.order_by(sort_by)
 
 
-
 def filter_options_limit_to_published_related_people(objects):
     """
     Only include filter options in select lists if selecting them will show items
@@ -163,7 +162,7 @@ class TextDetailView(DetailView):
     """
     template_name = 'researchdata/detail.html'
     queryset = models.Text.objects.filter(published=True)
-        # .prefetch_related('person', 'letterperson_set',)
+    # .prefetch_related('person', 'letterperson_set',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -331,7 +330,6 @@ class TextListView(ListView):
     #     ]
 
     #     return context
-
 
 
 def export_csv(request):

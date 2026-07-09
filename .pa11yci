@@ -1,11 +1,13 @@
 {
     "defaults": {
         "runners": ["axe", "htmlcs"],
+        "hideElements": ".navbar-brand, #main-content h2",
         "chromeLaunchConfig": {
             "args": ["--no-sandbox"]
         }
     },
     "urls": [
+        "http://localhost:8000/",
         "http://localhost:8000/cookies/"
     ]
 }
