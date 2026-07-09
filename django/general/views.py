@@ -8,18 +8,18 @@ class WelcomeTemplateView(TemplateView):
     template_name = 'general/welcome.html'
 
 
-class AboutTemplateView(TemplateView):
+class TeamTemplateView(TemplateView):
     """
-    Class-based view to show the about template
+    Class-based view to show the team template
     """
-    template_name = 'general/about.html'
+    template_name = 'general/team.html'
 
 
-class DiscoverTemplateView(TemplateView):
+class IntroductionTemplateView(TemplateView):
     """
-    Class-based view to show the discover template
+    Class-based view to show the introduction template
     """
-    template_name = 'general/discover.html'
+    template_name = 'general/introduction.html'
 
 
 class ResourcesTemplateView(TemplateView):

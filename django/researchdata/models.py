@@ -39,10 +39,10 @@ class Agent(SimpleModelAbstract):
 
     related_name = 'agents'
 
-    role = models.ForeignKey(AgentRole, related_name=related_name, on_delete=models.RESTRICT)
+    other_contributors = models.ManyToManyField(AgentRole, related_name=related_name, blank=True)
     gender = models.ForeignKey(Gender, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
-    birth_year = models.IntegerField(blank=True, null=True)
-    death_year = models.IntegerField(blank=True, null=True)
+    birth_year = models.CharField(max_length=1000, blank=True, null=True)
+    death_year = models.CharField(max_length=1000, blank=True, null=True)
     associated_country = models.CharField(max_length=1000, blank=True, null=True)
     viaf = models.CharField(max_length=1000, blank=True, null=True, verbose_name='VIAF')
     other_links = models.TextField(blank=True, null=True)
@@ -54,8 +54,8 @@ class Agent(SimpleModelAbstract):
         ordering = [Upper('role__name'), Upper('name'), 'id']
 
 
-class PlaceOfPublication(SimpleModelAbstract):
-    """ Place of publication of a text """
+class Place(SimpleModelAbstract):
+    """ A Place, e.g. place of publication of a text """
 
 
 class Language(SimpleModelAbstract):
@@ -79,11 +79,13 @@ class PrimarySource(SimpleModelAbstract):
 
     related_name = 'primarysources'
 
+    name = models.CharField(max_length=1000, verbose_name='title')
     author = models.ForeignKey(Agent, related_name=f'{related_name}_authors', on_delete=models.SET_NULL, blank=True, null=True)
     other_contributors = models.ManyToManyField(Agent, related_name=f'{related_name}_othercontributors', blank=True)
-    place_of_publication = models.ForeignKey(PlaceOfPublication, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
-    year_of_publication = models.IntegerField(blank=True, null=True)
+    place_of_publication = models.ForeignKey(Place, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
+    year_of_publication = models.CharField(max_length=1000, blank=True, null=True)
     languages = models.ManyToManyField(Language, related_name=related_name, blank=True)
+    manuscript = models.BooleanField(default=False)
     link = models.URLField(blank=True, null=True)
 
 
@@ -92,8 +94,9 @@ class SecondarySource(SimpleModelAbstract):
 
     related_name = 'secondarysources'
 
+    name = models.CharField(max_length=1000, verbose_name='title')
     author = models.ForeignKey(Agent, related_name=f'{related_name}_authors', on_delete=models.SET_NULL, blank=True, null=True)
-    year_of_publication = models.IntegerField(blank=True, null=True)
+    year_of_publication = models.CharField(max_length=1000, blank=True, null=True)
     link = models.URLField(blank=True, null=True)
 
 
@@ -113,9 +116,9 @@ class Text(models.Model):
     # Publication Information
     translator = models.ForeignKey(Agent, related_name=f'{related_name}_translator', on_delete=models.SET_NULL, blank=True, null=True)
     other_contributors = models.ManyToManyField(Agent, related_name=f'{related_name}_othercontributors', blank=True)
-    place_of_publication = models.ForeignKey(PlaceOfPublication, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
-    false_imprint = models.CharField(max_length=1000, blank=True, null=True)
-    specific_location = models.CharField(max_length=1000, blank=True, null=True)
+    place = models.ForeignKey(Place, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
+    false_imprint = models.BooleanField(default=False)
+    associated_location = models.CharField(max_length=1000, blank=True, null=True)
     publisher = models.ManyToManyField(Agent, related_name=f'{related_name}_publishers', blank=True, verbose_name='printer/publisher')
     year_of_publication = models.IntegerField(blank=True, null=True)
     specific_date = models.CharField(max_length=1000, blank=True, null=True)
@@ -124,14 +127,19 @@ class Text(models.Model):
     # Properties
     languages = models.ManyToManyField(Language, blank=True)
     multilingual = models.BooleanField(default=False)
-    translation = models.TextField(blank=True, null=True)
+    translation = models.BooleanField(default=False)
     type = models.ForeignKey(TextType, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
     format_of_publication = models.ForeignKey(FormatOfPublication, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
     number_of_issues = models.IntegerField(blank=True, null=True)
     pagination = models.CharField(max_length=1000, blank=True, null=True)
     number_of_main_text_pages = models.IntegerField(blank=True, null=True)
     number_of_liminary_pages = models.IntegerField(blank=True, null=True)
-    number_of_pages_containing_french = models.IntegerField(blank=True, null=True)
+    number_of_pages_containing_french = models.IntegerField(blank=True, null=True, verbose_name='Number of pages containing French')
+    dedicatee = models.ManyToManyField(Agent, related_name=f'{related_name}_dedicatees', blank=True)
+    illustrations = models.BooleanField(default=False)
+    nelson_and_seccombe = models.TextField(blank=True, null=True, verbose_name='Nelson and Seccombe')
+    plre = models.TextField(blank=True, null=True, verbose_name='PLRE')
+    owner = models.ManyToManyField(Agent, related_name=f'{related_name}_owners', blank=True)
     illustrations = models.BooleanField(default=False)
 
     # Bibliographical Information
@@ -142,10 +150,11 @@ class Text(models.Model):
     rccc = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Renaissance Cultural Crossroads Catalogue (RCCC)')
     full_text_image = models.CharField(max_length=1000, blank=True, null=True, verbose_name='full-text - image')
     full_text_transcription = models.CharField(max_length=1000, blank=True, null=True, verbose_name='full-text - transcription')
-    subject = models.ForeignKey(Subject, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
+    subject = models.ManyToManyField(Subject, related_name=related_name, blank=True)
     primary_sources = models.ManyToManyField(PrimarySource, related_name=related_name, blank=True)
     secondary_sources = models.ManyToManyField(SecondarySource, related_name=related_name, blank=True)
     number_of_surviving_copies_in_uk = models.IntegerField(blank=True, null=True, verbose_name='Number of surviving copies in UK and Ireland')
+    number_of_surviving_copies_in_continental_europe = models.IntegerField(blank=True, null=True, verbose_name='Number of Surviving Copies in Continental Europe')
     number_of_surviving_copies_in_rest_of_world = models.IntegerField(blank=True, null=True)
 
     # Admin
