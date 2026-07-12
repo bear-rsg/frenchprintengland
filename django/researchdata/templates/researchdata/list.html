@@ -17,7 +17,7 @@
                 <div class="col-12">
                     <div class="input-group">
                         <!-- Search textbox -->
-                        <input type="text" class="form-control" name="search" title="search" id="list-options-search-input" placeholder="Search text">
+                        <input type="text" class="form-control" name="search" title="search" id="list-options-search-input" placeholder="Search">
                         <!-- Search button -->
                         <div class="input-group-append">
                             <button type="submit" value="Search" class="btn btn-primary" title="search-btn" id="list-options-search-button">
@@ -30,7 +30,7 @@
 
             <!-- Filters -->
             <div id="list-options-filters">
-                <div>Filters:</div>
+                <div id="list-options-filters-title">Filters</div>
                 {% for f in filters %}
                     <div class="list-options-filters-filter">
                         <label for="{{ f.filter_id }}">{{ f.filter_name }}</label>
@@ -49,13 +49,11 @@
                 <label>Sort by:</label>
                 <!-- Sort by -->
                 <select id="list-options-sort-by" name="sort_by">
-                        <option value="first_name">First Name</option>
-                        <option value="last_name">Last Name</option>
-                        <option value="year_of_birth">Year of Birth</option>
-                        <option value="year_of_death">Year of Death</option>
-                        <option value="year_active_start">Year Active Start</option>
-                        <option value="year_active_end">Year Active End</option>
-                        <option value="count_letterperson">Number of Letters</option>
+                        <option value="title">Title</option>
+                        <option value="number_of_main_text_pages">Number of main text pages</option>
+                        <option value="number_of_liminary_pages">Number of liminary pages</option>
+                        <option value="number_of_pages_containing_french">Number of pages containing French</option>
+                        <option value="record_date_created">Date added to database</option>
                 </select>
                 <!-- Sort direction -->
                 <select id="list-options-sort-direction" name="sort_direction">
@@ -89,7 +87,24 @@
             <a href="{% url 'researchdata:text-detail' object.id %}" class="list-body-item-link">
                 <div class="list-body-item-title">{{ object }}</div>
                 <div class="list-body-item-details">
-                    <label>Label:</label><span>data...</span>
+                    {% if object.author %}
+                        <div>
+                            <label>Author:</label>
+                            <span>{{ object.author }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.translator %}
+                        <div>
+                            <label>Translator:</label>
+                            <span>{{ object.translator }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.place %}
+                        <div>
+                            <label>Place:</label>
+                            <span>{{ object.place }}</span>
+                        </div>
+                    {% endif %}
                 </div>
             </a>
             <!-- Search Meta -->

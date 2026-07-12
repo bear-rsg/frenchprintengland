@@ -13,7 +13,7 @@ class SimpleModelAbstract(models.Model):
     See: https://docs.djangoproject.com/en/4.0/topics/db/models/#abstract-base-classes
     """
 
-    name = models.CharField(max_length=1000)
+    name = models.CharField(max_length=1000, unique=True)
 
     def __str__(self):
         return self.name
@@ -21,6 +21,12 @@ class SimpleModelAbstract(models.Model):
     class Meta:
         abstract = True
         ordering = [Upper('name'), 'id']
+        constraints = [
+            models.UniqueConstraint(
+                Upper('name'),
+                name='unique_%(app_label)s_%(class)s_name'
+            )
+        ]
 
 
 # 1. Secondary Models
@@ -39,7 +45,7 @@ class Agent(SimpleModelAbstract):
 
     related_name = 'agents'
 
-    other_contributors = models.ManyToManyField(AgentRole, related_name=related_name, blank=True)
+    roles = models.ManyToManyField(AgentRole, related_name=related_name, blank=True)
     gender = models.ForeignKey(Gender, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
     birth_year = models.CharField(max_length=1000, blank=True, null=True)
     death_year = models.CharField(max_length=1000, blank=True, null=True)
@@ -47,11 +53,16 @@ class Agent(SimpleModelAbstract):
     viaf = models.CharField(max_length=1000, blank=True, null=True, verbose_name='VIAF')
     other_links = models.TextField(blank=True, null=True)
 
+    def roles_as_str(self):
+        roles = list(self.roles.all())
+        if roles:
+            return ", ".join(str(role) for role in roles)
+
     def __str__(self):
-        return f'[{self.role.name}] {self.name}'
+        return self.name
 
     class Meta:
-        ordering = [Upper('role__name'), Upper('name'), 'id']
+        ordering = [Upper('name'), 'id']
 
 
 class Place(SimpleModelAbstract):
@@ -118,6 +129,7 @@ class Text(models.Model):
     other_contributors = models.ManyToManyField(Agent, related_name=f'{related_name}_othercontributors', blank=True)
     place = models.ForeignKey(Place, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
     false_imprint = models.BooleanField(default=False)
+    address_of_publication = models.TextField(blank=True, null=True)
     associated_location = models.CharField(max_length=1000, blank=True, null=True)
     publisher = models.ManyToManyField(Agent, related_name=f'{related_name}_publishers', blank=True, verbose_name='printer/publisher')
     year_of_publication = models.IntegerField(blank=True, null=True)
@@ -149,7 +161,7 @@ class Text(models.Model):
     fb_number = models.CharField(max_length=1000, blank=True, null=True, verbose_name='FB number')
     rccc = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Renaissance Cultural Crossroads Catalogue (RCCC)')
     full_text_image = models.CharField(max_length=1000, blank=True, null=True, verbose_name='full-text - image')
-    full_text_transcription = models.CharField(max_length=1000, blank=True, null=True, verbose_name='full-text - transcription')
+    full_text_transcription = models.TextField(blank=True, null=True, verbose_name='full-text - transcription')
     subject = models.ManyToManyField(Subject, related_name=related_name, blank=True)
     primary_sources = models.ManyToManyField(PrimarySource, related_name=related_name, blank=True)
     secondary_sources = models.ManyToManyField(SecondarySource, related_name=related_name, blank=True)
