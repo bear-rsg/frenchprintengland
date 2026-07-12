@@ -21,8 +21,10 @@ def create_agent_roles(apps, schema_editor):
     names = [
         'Author',
         'Contributor',
+        'Dedicatee',
         'Publisher',
-        'Translator'
+        'Translator',
+        'Owner'
     ]
 
     for name in names:

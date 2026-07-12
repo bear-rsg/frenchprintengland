@@ -82,7 +82,7 @@ class GenericAdminView(admin.ModelAdmin):
 
 admin.site.register(models.Gender, GenericAdminView)
 admin.site.register(models.AgentRole, GenericAdminView)
-admin.site.register(models.PlaceOfPublication, GenericAdminView)
+admin.site.register(models.Place, GenericAdminView)
 admin.site.register(models.Language, GenericAdminView)
 admin.site.register(models.TextType, GenericAdminView)
 admin.site.register(models.FormatOfPublication, GenericAdminView)
@@ -98,10 +98,7 @@ admin.site.register(models.SecondarySource, GenericAdminView)
 class AgentAdminView(GenericAdminView):
     """ Customise the admin interface for Agent model """
 
-    list_filter = (
-        'role',
-        'gender',
-    )
+    list_filter = ('gender',)
 
 
 @admin.register(models.Text)
@@ -140,9 +137,10 @@ class TextAdminView(GenericAdminView):
             'fields': (
                 'translator',
                 'other_contributors',
-                'place_of_publication',
+                'place',
                 'false_imprint',
-                'specific_location',
+                'address_of_publication',
+                'associated_location',
                 'publisher',
                 'year_of_publication',
                 'specific_date',
@@ -161,7 +159,10 @@ class TextAdminView(GenericAdminView):
                 'number_of_main_text_pages',
                 'number_of_liminary_pages',
                 'number_of_pages_containing_french',
+                'dedicatee',
                 'illustrations',
+                'nelson_and_seccombe',
+                'plre'
             )
         }),
         ('Bibliographical Information', {
@@ -177,6 +178,7 @@ class TextAdminView(GenericAdminView):
                 'primary_sources',
                 'secondary_sources',
                 'number_of_surviving_copies_in_uk',
+                'number_of_surviving_copies_in_continental_europe',
                 'number_of_surviving_copies_in_rest_of_world'
             )
         }),

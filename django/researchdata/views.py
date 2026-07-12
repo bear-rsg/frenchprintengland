@@ -22,37 +22,13 @@ def get_field_type(field_name, queryset):
         return CharField  # If it fails, assume it's a CharField by default
 
 
-def details_section_visibility(details_list):
+def queryset_as_str(queryset, separator=', '):
     """
-    Show the detail section if at least one value exists
-    """
-    for section in details_list:
-        if len(section):
-            for detail in section:
-                if 'value' in detail and detail['value']:
-                    section[0]['section_visible'] = True
-                    break
-    return details_list
-
-
-def html_details_list_items(object_list):
-    """
-    Return a HTML string of a list of objects (i.e. a queryset) for use in the 'Details' tab of an item page.
-    E.g. showing ManyToMany and reverse FK objects
-
-    The model of the object_list must have a dynamic property 'html_details_list_item_text'
+    Return a string of all objects in a queryset separated by a separator
     """
 
-    # Multiple objects
-    if len(object_list) > 1:
-        list_items = '</li><li>'.join(str(item.html_details_list_item_text) for item in object_list)
-        return f'<ul><li>{list_items}</li></ul>'
-    # 1 object
-    elif len(object_list) == 1:
-        return str(object_list[0].html_details_list_item_text)
-    # No objects (will be ignored)
-    else:
-        return ""
+    if len(queryset):
+        return separator.join(str(obj) for obj in queryset)
 
 
 # Special starts to the values & labels of options in 'filter' select lists
@@ -146,23 +122,17 @@ def sort(request, queryset, sort_by_default='id'):
                 return queryset.order_by(sort_by)
 
 
-def filter_options_limit_to_published_related_people(objects):
-    """
-    Only include filter options in select lists if selecting them will show items
-    E.g. if there are published people that belong to each filter
-    """
-    return objects.annotate(
-        published_people_count=Count('related_person', filter=Q(related_person__admin_published=True))
-    ).filter(published_people_count__gt=0)
-
-
 class TextDetailView(DetailView):
     """
     Class-based view for text detail template
     """
     template_name = 'researchdata/detail.html'
-    queryset = models.Text.objects.filter(published=True)
-    # .prefetch_related('person', 'letterperson_set',)
+
+    def get_queryset(self):
+        queryset = models.Text.objects.all()
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(published=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -171,25 +141,48 @@ class TextDetailView(DetailView):
         context['admin_url'] = reverse('admin:researchdata_text_change', args=[self.object.id])
 
         # Details
-        # context['details'] = details_section_visibility([
-        #     [
-        #         {'label': 'First Name', 'value': self.object.first_name},
-        #         {'label': 'Middle Name', 'value': self.object.middle_name},
-        #         {'label': 'Last Name', 'value': self.object.last_name},
-        #         {'label': 'Alternative Spelling of Name Number', 'value': self.object.alternative_spelling_of_name},
-        #         {'label': 'Alternative Names', 'value': self.object.alternative_names},
-        #         {'label': 'Year of Birth', 'value': self.object.year_of_birth},
-        #         {'label': 'Year of Death', 'value': self.object.year_of_death},
-        #         {'label': 'Years Active (from)', 'value': self.object.year_of_birth},
-        #         {'label': 'Years Active (to)', 'value': self.object.year_of_death},
-        #         {'label': 'Gender', 'value': self.object.gender},
-        #         {'label': 'Title', 'value': html_details_list_items(self.object.title.all())},
-        #         {'label': 'Marital Status', 'value': html_details_list_items(self.object.marital_status.all())},
-        #         {'label': 'Religion', 'value': html_details_list_items(self.object.religion.all())},
-        #         {'label': 'Rank', 'value': html_details_list_items(self.object.rank.all())},
-        #         {'label': 'Occupation', 'value': self.object.occupation},
-        #     ],
-        # ])
+        context['details'] = [
+            {'label': 'Author', 'value': self.object.author},
+            {'label': 'Translator', 'value': self.object.translator},
+            {'label': 'Other contributors', 'value': queryset_as_str(self.object.other_contributors.all())},
+            {'label': 'Place', 'value': self.object.place},
+            {'label': 'False imprint', 'value': self.object.false_imprint},
+            {'label': 'Address of publication', 'value': self.object.address_of_publication},
+            {'label': 'Associated location', 'value': self.object.associated_location},
+            {'label': 'Publisher', 'value': queryset_as_str(self.object.publisher.all())},
+            {'label': 'Year of publication', 'value': self.object.year_of_publication},
+            {'label': 'Specific date', 'value': self.object.specific_date},
+            {'label': 'Lost book', 'value': self.object.lost_book},
+            {'label': 'Languages', 'value': queryset_as_str(self.object.languages.all())},
+            {'label': 'Multilingual', 'value': self.object.multilingual},
+            {'label': 'Translation', 'value': self.object.translation},
+            {'label': 'Type', 'value': self.object.type},
+            {'label': 'Format_of_publication', 'value': self.object.format_of_publication},
+            {'label': 'Number_of_issues', 'value': self.object.number_of_issues},
+            {'label': 'Pagination', 'value': self.object.pagination},
+            {'label': 'Number of main text pages', 'value': self.object.number_of_main_text_pages},
+            {'label': 'Number of liminary pages', 'value': self.object.number_of_liminary_pages},
+            {'label': 'Number of pages containing French', 'value': self.object.number_of_pages_containing_french},
+            {'label': 'Dedicatee', 'value': queryset_as_str(self.object.dedicatee.all())},
+            {'label': 'Illustrations', 'value': self.object.illustrations},
+            {'label': 'Nelson and Seccombe', 'value': self.object.nelson_and_seccombe},
+            {'label': 'PLRE', 'value': self.object.plre},
+            {'label': 'Owner', 'value': queryset_as_str(self.object.owner.all())},
+            {'label': 'Illustrations', 'value': self.object.illustrations},
+            {'label': 'STC', 'value': self.object.stc},
+            {'label': 'ESTC', 'value': self.object.estc},
+            {'label': 'USTC', 'value': self.object.ustc},
+            {'label': 'FB number', 'value': self.object.fb_number},
+            {'label': 'RCCC', 'value': self.object.rccc},
+            {'label': 'Full text image', 'value': self.object.full_text_image},
+            {'label': 'Full text transcription', 'value': self.object.full_text_transcription},
+            {'label': 'Subject', 'value': queryset_as_str(self.object.subject.all())},
+            {'label': 'Primary sources', 'value': queryset_as_str(self.object.primary_sources.all())},
+            {'label': 'Secondary sources', 'value': queryset_as_str(self.object.secondary_sources.all())},
+            {'label': 'Number of surviving copies in UK', 'value': self.object.number_of_surviving_copies_in_uk},
+            {'label': 'Number of surviving copies in continental Europe', 'value': self.object.number_of_surviving_copies_in_continental_europe},
+            {'label': 'Number of surviving copies in rest of the world', 'value': self.object.number_of_surviving_copies_in_rest_of_world},
+        ]
 
         return context
 
@@ -202,134 +195,110 @@ class TextListView(ListView):
     model = models.Text
     paginate_by = 60
 
-    # def get_queryset(self):
-    #     # Start with all published objects
-    #     queryset = self.model.objects.filter(admin_published=True)
-    #     # Add annotations for improved searching
-    #     # name_first_last
-    #     queryset = queryset.annotate(
-    #         name_first_last=Concat('first_name', Value(' '), 'last_name',
-    #                                output_field=CharField()))
-    #     # name_full
-    #     queryset = queryset.annotate(
-    #         name_full=Concat('first_name', Value(' '), 'middle_name', Value(' '), 'last_name',
-    #                          output_field=CharField()))
+    def get_queryset(self):
+        # Start with all published objects
+        queryset = self.model.objects.all()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(published=True)
 
-    #     # Search
-    #     search = self.request.GET.get('search', '')
-    #     if search != '':
-    #         queryset = queryset.filter(
-    #             Q(first_name__icontains=search) |
-    #             Q(middle_name__icontains=search) |
-    #             Q(last_name__icontains=search) |
-    #             Q(alternative_spelling_of_name__icontains=search) |
-    #             Q(alternative_names__icontains=search) |
-    #             Q(year_of_birth__icontains=search) |
-    #             Q(year_of_death__icontains=search) |
-    #             Q(year_of_birth__icontains=search) |
-    #             Q(year_of_death__icontains=search) |
-    #             Q(occupation__icontains=search) |
+        # Search
+        search = self.request.GET.get('search', '')
+        if search != '':
+            queryset = queryset.filter(
+                Q(title__icontains=search) |
+                Q(address_of_publication__icontains=search) |
+                Q(associated_location__icontains=search) |
+                Q(specific_date__icontains=search) |
+                Q(pagination__icontains=search) |
+                Q(nelson_and_seccombe__icontains=search) |
+                Q(plre__icontains=search) |
+                Q(stc__icontains=search) |
+                Q(estc__icontains=search) |
+                Q(ustc__icontains=search) |
+                Q(fb_number__icontains=search) |
+                Q(rccc__icontains=search) |
+                Q(full_text_image__icontains=search) |
+                Q(full_text_transcription__icontains=search) |
 
-    #             # Annotation fields
-    #             Q(name_first_last__icontains=search) |
-    #             Q(name_full__icontains=search) |
+                # FK
+                Q(author__name__icontains=search) |
+                Q(translator__name__icontains=search) |
+                Q(place__name__icontains=search) |
+                Q(type__name__icontains=search) |
+                Q(format_of_publication__name__icontains=search)
+            )
+        # Filters
+        queryset = filter(self.request, queryset)
+        # Sort
+        queryset = sort(self.request, queryset, 'title')
+        # Return result, showing only distinct
+        return queryset.distinct()\
+            .prefetch_related(
+                'other_contributors',
+                'publisher',
+                'languages',
+                'dedicatee',
+                'owner',
+                'subject',
+                'primary_sources',
+                'secondary_sources',
+            )\
+            .select_related(
+                'author',
+                'translator',
+                'place',
+                'type',
+                'format_of_publication'
+            )
 
-    #             # FK
-    #             Q(gender__name__icontains=search) |
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    #             # M2M
-    #             Q(title__name__icontains=search) |
-    #             Q(marital_status__name__icontains=search) |
-    #             Q(religion__name__icontains=search) |
-    #             Q(rank__name__icontains=search) |
+        # Options: Filters
+        context['filters'] = [
+            {
+                'filter_id': f'{filter_pre_fk}author',
+                'filter_name': 'Author',
+                'filter_options': models.Agent.objects.filter(roles__name__iexact='author').distinct()
+            },
+            {
+                'filter_id': f'{filter_pre_fk}translator',
+                'filter_name': 'Translator',
+                'filter_options': models.Agent.objects.filter(roles__name__iexact='translator').distinct()
+            },
+            {
+                'filter_id': f'{filter_pre_fk}place',
+                'filter_name': 'Place',
+                'filter_options': models.Place.objects.all()
+            },
+            {
+                'filter_id': f'{filter_pre_fk}type',
+                'filter_name': 'Text Type',
+                'filter_options': models.TextType.objects.all()
+            },
+            {
+                'filter_id': f'{filter_pre_fk}format_of_publication',
+                'filter_name': 'Format of Publication',
+                'filter_options': models.FormatOfPublication.objects.all()
+            },
+            {
+                'filter_id': f'{filter_pre_mm}publishers',
+                'filter_name': 'Publisher',
+                'filter_options': models.Agent.objects.filter(roles__name__iexact='publisher').distinct()
+            },
+            {
+                'filter_id': f'{filter_pre_mm}languages',
+                'filter_name': 'Language',
+                'filter_options': models.Language.objects.all()
+            },
+            {
+                'filter_id': f'{filter_pre_mm}dedicatee',
+                'filter_name': 'Dedicatee',
+                'filter_options': models.Agent.objects.filter(roles__name__iexact='dedicatee').distinct()
+            },
+        ]
 
-    #             # M2M via LetterPerson
-    #             Q(letterperson__body_part__name__icontains=search) |
-    #             Q(letterperson__bodily_activity__name__icontains=search) |
-    #             Q(letterperson__appearance__name__icontains=search) |
-    #             Q(letterperson__emotion__name__icontains=search) |
-    #             Q(letterperson__sensation__name__icontains=search) |
-    #             # Following are commented out for performance reasons (too many = too slow)
-    #             # Q(letterperson__condition_specific_state__name__icontains=search) |
-    #             # Q(letterperson__immaterial__name__icontains=search) |
-    #             # Q(letterperson__condition_specific_life_stage__name__icontains=search) |
-    #             # Q(letterperson__condition_generalized_state__name__icontains=search) |
-    #             # Q(letterperson__treatment__name__icontains=search) |
-    #             # Q(letterperson__roles__name__icontains=search) |
-    #             # Q(letterperson__context__name__icontains=search) |
-    #             # Q(letterperson__state__name__icontains=search) |
-
-    #             # M2M via LetterPerson > Letter
-    #             Q(letterperson__letter__letter_type__name__icontains=search) |
-    #             Q(letterperson__letter__commentary__name__icontains=search) |
-    #             Q(letterperson__letter__location__name__icontains=search)
-    #         )
-    #     # Filters
-    #     queryset = filter(self.request, queryset)
-    #     # Sort
-    #     queryset = sort(self.request, queryset, 'first_name')
-    #     # Return result, showing only distinct
-    #     return queryset.distinct()\
-    #         .prefetch_related('letterperson_set').select_related('gender')
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-
-    #     # Options: Filters
-    #     context['filters'] = [
-    #         {
-    #             'filter_id': f'{filter_pre_mm}gender',
-    #             'filter_name': 'Gender',
-    #             'filter_options': models.SlPersonGender.objects
-    #         },
-    #         {
-    #             'filter_id': f'{filter_pre_mm}marital_status',
-    #             'filter_name': 'Marital Status',
-    #             'filter_options': filter_options_limit_to_published_related_people(
-    #                 models.SlPersonMaritalStatus.objects
-    #             )
-    #         },
-    #         {
-    #             'filter_id': f'{filter_pre_mm}religion',
-    #             'filter_name': 'Religion',
-    #             'filter_options': filter_options_limit_to_published_related_people(models.SlPersonReligion.objects)
-    #         },
-    #         {
-    #             'filter_id': f'{filter_pre_mm}rank',
-    #             'filter_name': 'Rank',
-    #             'filter_options': filter_options_limit_to_published_related_people(models.SlPersonRank.objects)
-    #         },
-    #         {
-    #             'filter_id': f'{filter_pre_gt}year_of_birth',
-    #             'filter_classes': filter_pre_gt,
-    #             'filter_name': 'Year of Birth (from)',
-    #             'filter_options': models.Person.objects.filter(year_of_birth__gt=1000).exclude(year_of_birth__isnull=True).distinct().order_by('year_of_birth').values_list('year_of_birth', flat=True),  # NOQA
-    #             'valueSameAsText': True
-    #         },
-    #         {
-    #             'filter_id': f'{filter_pre_lt}year_of_birth',
-    #             'filter_classes': filter_pre_lt,
-    #             'filter_name': 'Year of Birth (to)',
-    #             'filter_options': models.Person.objects.filter(year_of_birth__gt=1000).exclude(year_of_birth__isnull=True).distinct().order_by('year_of_birth').values_list('year_of_birth', flat=True),  # NOQA
-    #             'valueSameAsText': True
-    #         },
-    #         {
-    #             'filter_id': f'{filter_pre_gt}year_of_death',
-    #             'filter_classes': filter_pre_gt,
-    #             'filter_name': 'Year of Death (from)',
-    #             'filter_options': models.Person.objects.filter(year_of_death__gt=1000).exclude(year_of_death__isnull=True).distinct().order_by('year_of_death').values_list('year_of_death', flat=True),  # NOQA
-    #             'valueSameAsText': True
-    #         },
-    #         {
-    #             'filter_id': f'{filter_pre_lt}year_of_death',
-    #             'filter_classes': filter_pre_lt,
-    #             'filter_name': 'Year of Death (to)',
-    #             'filter_options': models.Person.objects.filter(year_of_death__gt=1000).exclude(year_of_death__isnull=True).distinct().order_by('year_of_death').values_list('year_of_death', flat=True),  # NOQA
-    #             'valueSameAsText': True
-    #         }
-    #     ]
-
-    #     return context
+        return context
 
 
 def export_csv(request):
