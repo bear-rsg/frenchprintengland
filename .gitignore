@@ -9,6 +9,7 @@ django/media/
 django/static/
 node_modules/
 accessibility_reports/
+django/general/migrations/
 
 
 ###################### Django Templated gitignore paths  ######################
