@@ -4,8 +4,9 @@ from django.db.models.functions import Lower
 from django.db.models import CharField, Q, Count, TextField
 from django.urls import reverse
 from datetime import datetime
+from openpyxl import Workbook
 from . import models
-import csv
+import io
 
 
 def get_field_type(field_name, queryset):
@@ -222,10 +223,23 @@ class TextListView(ListView):
 
                 # FK
                 Q(author__name__icontains=search) |
+                Q(author__gender__name__iexact=search) |
                 Q(translator__name__icontains=search) |
+                Q(translator__gender__name__iexact=search) |
                 Q(place__name__icontains=search) |
                 Q(type__name__icontains=search) |
-                Q(format_of_publication__name__icontains=search)
+                Q(format_of_publication__name__icontains=search) |
+
+                # M2M
+                Q(other_contributors__name__icontains=search) |
+                Q(publisher__name__icontains=search) |
+                Q(languages__name__icontains=search) |
+                Q(dedicatee__name__icontains=search) |
+                Q(dedicatee__gender__name__iexact=search) |
+                Q(owner__name__icontains=search) |
+                Q(subject__name__icontains=search) |
+                Q(primary_sources__name__icontains=search) |
+                Q(secondary_sources__name__icontains=search)
             )
         # Filters
         queryset = filter(self.request, queryset)
@@ -301,28 +315,40 @@ class TextListView(ListView):
         return context
 
 
-def export_csv(request):
+def export_excel(request):
     """
-    Returns a CSV file containing all OratorInPassage objects
+    Returns a Excel file containing data from all specified models
     """
 
-    # Define data
-    queryset = models.OratorInPassage.objects.all()
-    # Prepare response
-    response = HttpResponse(content_type='text/csv')
-    now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    response['Content-Disposition'] = f'attachment; filename="data_export_{now}.csv"'
-    # Setup the CSV Writer
-    writer = csv.writer(response)
-
-    if queryset is not None:
-        # Write header row to CSV file
-        field_names = [field.name for field in queryset.model._meta.fields]
-        writer.writerow(field_names)
-        # Write the data rows to CSV file
-        for obj in queryset:
-            # Extract the value for each field on the current object
-            row = [getattr(obj, field) for field in field_names]
-            writer.writerow(row)
-
-    return response
+    wb = Workbook()
+    wb.remove(wb.active)
+    for m in [
+        models.Text,
+        models.Agent,
+        models.AgentRole,
+        models.Gender,
+        models.Place,
+        models.Language,
+        models.TextType,
+        models.FormatOfPublication,
+        models.Subject,
+        models.PrimarySource,
+        models.SecondarySource
+    ]:
+        ws = wb.create_sheet(title=str(m._meta.verbose_name_plural).title()[:31])
+        fields = [f.name for f in m._meta.fields]
+        m2m = [f.name for f in m._meta.many_to_many]
+        ws.append(fields + m2m)
+        for obj in m.objects.prefetch_related(*m2m):
+            row = [
+                v.replace(tzinfo=None) if isinstance(v, datetime)
+                else v if isinstance(v, (int, float, bool, type(None)))
+                else str(v) for v in (getattr(obj, f) for f in fields)
+            ] + [", ".join(str(i) for i in getattr(obj, f).all()) for f in m2m]
+            ws.append(row)
+    b = io.BytesIO()
+    wb.save(b)
+    ts = datetime.now().strftime('%y-%m-%d-%H-%M-%S')
+    r = HttpResponse(b.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    r['Content-Disposition'] = f'attachment; filename="frenchprintengland-dataexport-{ts}.xlsx"'
+    return r

@@ -8,5 +8,5 @@ urlpatterns = [
     path('texts/', views.TextListView.as_view(), name='text-list'),
     path('texts/<pk>/', views.TextDetailView.as_view(), name='text-detail'),
     # Export Data
-    path('export/csv/', views.export_csv, name='export-csv'),
+    path('export/excel/', views.export_excel, name='export-excel'),
 ]
