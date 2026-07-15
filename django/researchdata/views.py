@@ -6,7 +6,7 @@ from django.urls import reverse
 from datetime import datetime
 from openpyxl import Workbook
 from . import models
-import io, datetime
+import io
 
 
 def get_field_type(field_name, queryset):
@@ -334,22 +334,21 @@ def export_excel(request):
         models.Subject,
         models.PrimarySource,
         models.SecondarySource
-    ]: 
+    ]:
         ws = wb.create_sheet(title=str(m._meta.verbose_name_plural).title()[:31])
         fields = [f.name for f in m._meta.fields]
         m2m = [f.name for f in m._meta.many_to_many]
         ws.append(fields + m2m)
         for obj in m.objects.prefetch_related(*m2m):
             row = [
-                v.replace(tzinfo=None) if isinstance(v, datetime.datetime) 
-                else v if isinstance(v, (int, float, bool, type(None))) 
+                v.replace(tzinfo=None) if isinstance(v, datetime)
+                else v if isinstance(v, (int, float, bool, type(None)))
                 else str(v) for v in (getattr(obj, f) for f in fields)
             ] + [", ".join(str(i) for i in getattr(obj, f).all()) for f in m2m]
-            
             ws.append(row)
     b = io.BytesIO()
     wb.save(b)
-    ts = datetime.datetime.now().strftime('%y-%m-%d-%H-%M-%S')
+    ts = datetime.now().strftime('%y-%m-%d-%H-%M-%S')
     r = HttpResponse(b.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     r['Content-Disposition'] = f'attachment; filename="frenchprintengland-dataexport-{ts}.xlsx"'
     return r
