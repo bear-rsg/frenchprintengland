@@ -29,4 +29,16 @@
 
 </div>
 
+
+<script>
+$(document).ready(function() {
+    // Make all URLs on page clickable links that open in new tabs/window
+    $('#detail-details *:not(a, script, style)').contents().filter(function() {
+        return this.nodeType === 3 && /(https?:\/\/[^\s]+)/g.test(this.nodeValue);
+    }).each(function() {
+        $(this).replaceWith(this.nodeValue.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>'));
+    });
+});
+</script>
+
 {% endblock %}
