@@ -17,11 +17,15 @@
 
         <div id="detail-details">
             {% for detail in details %}
-                {% if detail.value %}
-                    <div class="detail-details-item">
-                        <label>{{ detail.label }}</label>
-                        <span>{{ detail.value | safe }}</span>
-                    </div>
+                {% if detail.section_header %}
+                    <h3>{{ detail.section_header }}</h3>
+                {% else %}
+                    {% if detail.value %}
+                        <div class="detail-details-item">
+                            <label>{{ detail.label }}</label>
+                            <span>{{ detail.value | safe }}</span>
+                        </div>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
         </div>

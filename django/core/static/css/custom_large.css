@@ -71,12 +71,4 @@
         vertical-align: middle;
     }
 
-    /* ---------- Detail ---------- */
-
-    .viewinadmindashboard-link-container {
-        float: right;
-        width: fit-content;
-        padding-left: 2em;
-    }
-
 }

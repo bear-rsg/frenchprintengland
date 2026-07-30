@@ -143,43 +143,48 @@ class TextDetailView(DetailView):
 
         # Details
         context['details'] = [
+            {'label': 'ESTC', 'value': self.object.estc},
+            {'label': 'STC', 'value': self.object.stc},
+            {'label': 'USTC', 'value': self.object.ustc},
             {'label': 'Author', 'value': self.object.author},
-            {'label': 'Translator', 'value': self.object.translator},
+
+            # Publication Information
+            {'section_header': 'Publication Information'},
+            {'label': 'Translators', 'value': queryset_as_str(self.object.translators.all())},
             {'label': 'Other contributors', 'value': queryset_as_str(self.object.other_contributors.all())},
-            {'label': 'Place', 'value': self.object.place},
+            {'label': 'Imprint', 'value': self.object.imprint},
+            {'label': 'Place of publication', 'value': self.object.place_of_publication},
             {'label': 'False imprint', 'value': self.object.false_imprint},
-            {'label': 'Address of publication', 'value': self.object.address_of_publication},
-            {'label': 'Associated location', 'value': self.object.associated_location},
-            {'label': 'Publisher', 'value': queryset_as_str(self.object.publisher.all())},
+            {'label': 'Publishers', 'value': queryset_as_str(self.object.publishers.all())},
             {'label': 'Year of publication', 'value': self.object.year_of_publication},
-            {'label': 'Specific date', 'value': self.object.specific_date},
+            {'label': 'Associated date', 'value': self.object.associated_date},
+            {'label': 'Associated location', 'value': queryset_as_str(self.object.associated_locations.all())},
             {'label': 'Lost book', 'value': self.object.lost_book},
+
+            # Properties
+            {'section_header': 'Properties'},
             {'label': 'Languages', 'value': queryset_as_str(self.object.languages.all())},
-            {'label': 'Multilingual', 'value': self.object.multilingual},
-            {'label': 'Translation', 'value': self.object.translation},
-            {'label': 'Type', 'value': self.object.type},
+            {'label': 'Number of languages', 'value': self.object.number_of_languages},
+            {'label': 'Type', 'value': self.object.text_type},
             {'label': 'Format_of_publication', 'value': self.object.format_of_publication},
             {'label': 'Number_of_issues', 'value': self.object.number_of_issues},
             {'label': 'Pagination', 'value': self.object.pagination},
-            {'label': 'Number of main text pages', 'value': self.object.number_of_main_text_pages},
-            {'label': 'Number of liminary pages', 'value': self.object.number_of_liminary_pages},
             {'label': 'Number of pages containing French', 'value': self.object.number_of_pages_containing_french},
-            {'label': 'Dedicatee', 'value': queryset_as_str(self.object.dedicatee.all())},
-            {'label': 'Illustrations', 'value': self.object.illustrations},
-            {'label': 'Nelson and Seccombe', 'value': self.object.nelson_and_seccombe},
-            {'label': 'PLRE', 'value': self.object.plre},
-            {'label': 'Owner', 'value': queryset_as_str(self.object.owner.all())},
-            {'label': 'Illustrations', 'value': self.object.illustrations},
-            {'label': 'STC', 'value': self.object.stc},
-            {'label': 'ESTC', 'value': self.object.estc},
-            {'label': 'USTC', 'value': self.object.ustc},
-            {'label': 'FB number', 'value': self.object.fb_number},
+            {'label': 'Textual features', 'value': queryset_as_str(self.object.textual_features.all())},
+            {'label': 'Dedicatees', 'value': queryset_as_str(self.object.dedicatees.all())},
+
+            # Bibliographical Information
+            {'section_header': 'Bibliographical Information'},
+            {'label': 'FB', 'value': self.object.fb},
             {'label': 'RCCC', 'value': self.object.rccc},
+            {'label': 'Nelson and Seccombe', 'value': self.object.nelson_and_seccombe},
+            {'label': "Stationers' register ", 'value': self.object.nelson_and_seccombe},
+            {'label': 'PLRE', 'value': self.object.plre},
+            {'label': 'Owners', 'value': queryset_as_str(self.object.owners.all())},
             {'label': 'Full text image', 'value': self.object.full_text_image},
             {'label': 'Full text transcription', 'value': self.object.full_text_transcription},
-            {'label': 'Subject', 'value': queryset_as_str(self.object.subject.all())},
-            {'label': 'Primary sources', 'value': queryset_as_str(self.object.primary_sources.all())},
-            {'label': 'Secondary sources', 'value': queryset_as_str(self.object.secondary_sources.all())},
+            {'label': 'Subjects', 'value': queryset_as_str(self.object.subjects.all())},
+            {'label': 'Relationships', 'value': queryset_as_str(self.object.relationships.all())},
             {'label': 'Number of surviving copies in UK', 'value': self.object.number_of_surviving_copies_in_uk},
             {'label': 'Number of surviving copies in continental Europe', 'value': self.object.number_of_surviving_copies_in_continental_europe},
             {'label': 'Number of surviving copies in rest of the world', 'value': self.object.number_of_surviving_copies_in_rest_of_world},
@@ -206,40 +211,42 @@ class TextListView(ListView):
         search = self.request.GET.get('search', '')
         if search != '':
             queryset = queryset.filter(
-                Q(title__icontains=search) |
-                Q(address_of_publication__icontains=search) |
-                Q(associated_location__icontains=search) |
-                Q(specific_date__icontains=search) |
-                Q(pagination__icontains=search) |
-                Q(nelson_and_seccombe__icontains=search) |
-                Q(plre__icontains=search) |
-                Q(stc__icontains=search) |
                 Q(estc__icontains=search) |
+                Q(stc__icontains=search) |
                 Q(ustc__icontains=search) |
-                Q(fb_number__icontains=search) |
+                Q(title__icontains=search) |
+                Q(imprint__icontains=search) |
+                Q(year_of_publication__icontains=search) |
+                Q(associated_date__icontains=search) |
+                Q(pagination__icontains=search) |
+                Q(fb__icontains=search) |
                 Q(rccc__icontains=search) |
+                Q(nelson_and_seccombe__icontains=search) |
+                Q(stationers_register__icontains=search) |
+                Q(plre__icontains=search) |
                 Q(full_text_image__icontains=search) |
                 Q(full_text_transcription__icontains=search) |
 
                 # FK
                 Q(author__name__icontains=search) |
                 Q(author__gender__name__iexact=search) |
-                Q(translator__name__icontains=search) |
-                Q(translator__gender__name__iexact=search) |
-                Q(place__name__icontains=search) |
-                Q(type__name__icontains=search) |
+                Q(place_of_publication__name__icontains=search) |
+                Q(text_type__name__icontains=search) |
                 Q(format_of_publication__name__icontains=search) |
 
                 # M2M
+                Q(translators__name__icontains=search) |
+                Q(translators__gender__name__iexact=search) |
                 Q(other_contributors__name__icontains=search) |
-                Q(publisher__name__icontains=search) |
+                Q(publishers__name__icontains=search) |
+                Q(associated_locations__name__icontains=search) |
                 Q(languages__name__icontains=search) |
-                Q(dedicatee__name__icontains=search) |
-                Q(dedicatee__gender__name__iexact=search) |
-                Q(owner__name__icontains=search) |
-                Q(subject__name__icontains=search) |
-                Q(primary_sources__name__icontains=search) |
-                Q(secondary_sources__name__icontains=search)
+                Q(textual_features__name__icontains=search) |
+                Q(dedicatees__name__icontains=search) |
+                Q(dedicatees__gender__name__iexact=search) |
+                Q(owners__name__icontains=search) |
+                Q(subjects__name__icontains=search) |
+                Q(relationships__name__icontains=search)
             )
         # Filters
         queryset = filter(self.request, queryset)
@@ -248,20 +255,21 @@ class TextListView(ListView):
         # Return result, showing only distinct
         return queryset.distinct()\
             .prefetch_related(
+                'translators',
                 'other_contributors',
-                'publisher',
+                'publishers',
+                'associated_locations',
                 'languages',
-                'dedicatee',
-                'owner',
-                'subject',
-                'primary_sources',
-                'secondary_sources',
+                'textual_features',
+                'dedicatees',
+                'owners',
+                'subjects',
+                'relationships',
             )\
             .select_related(
                 'author',
-                'translator',
-                'place',
-                'type',
+                'place_of_publication',
+                'text_type',
                 'format_of_publication'
             )
 
@@ -276,18 +284,18 @@ class TextListView(ListView):
                 'filter_options': models.Agent.objects.filter(roles__name__iexact='author').distinct()
             },
             {
-                'filter_id': f'{filter_pre_fk}translator',
-                'filter_name': 'Translator',
+                'filter_id': f'{filter_pre_fk}translators',
+                'filter_name': 'Translators',
                 'filter_options': models.Agent.objects.filter(roles__name__iexact='translator').distinct()
             },
             {
-                'filter_id': f'{filter_pre_fk}place',
-                'filter_name': 'Place',
+                'filter_id': f'{filter_pre_fk}place_of_publication',
+                'filter_name': 'Place of Publication',
                 'filter_options': models.Place.objects.all()
             },
             {
-                'filter_id': f'{filter_pre_fk}type',
-                'filter_name': 'Text Type',
+                'filter_id': f'{filter_pre_fk}text_type',
+                'filter_name': 'Type',
                 'filter_options': models.TextType.objects.all()
             },
             {
@@ -297,17 +305,17 @@ class TextListView(ListView):
             },
             {
                 'filter_id': f'{filter_pre_mm}publishers',
-                'filter_name': 'Publisher',
+                'filter_name': 'Publishers',
                 'filter_options': models.Agent.objects.filter(roles__name__iexact='publisher').distinct()
             },
             {
                 'filter_id': f'{filter_pre_mm}languages',
-                'filter_name': 'Language',
+                'filter_name': 'Languages',
                 'filter_options': models.Language.objects.all()
             },
             {
                 'filter_id': f'{filter_pre_mm}dedicatee',
-                'filter_name': 'Dedicatee',
+                'filter_name': 'Dedicatees',
                 'filter_options': models.Agent.objects.filter(roles__name__iexact='dedicatee').distinct()
             },
         ]
@@ -323,17 +331,18 @@ def export_excel(request):
     wb = Workbook()
     wb.remove(wb.active)
     for m in [
+        models.PlaceType,
+        models.Place,
         models.Text,
         models.Agent,
         models.AgentRole,
         models.Gender,
-        models.Place,
         models.Language,
         models.TextType,
+        models.TextualFeatures,
         models.FormatOfPublication,
         models.Subject,
-        models.PrimarySource,
-        models.SecondarySource
+        models.Relationships,
     ]:
         ws = wb.create_sheet(title=str(m._meta.verbose_name_plural).title()[:31])
         fields = [f.name for f in m._meta.fields]
