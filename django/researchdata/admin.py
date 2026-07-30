@@ -79,16 +79,16 @@ class GenericAdminView(admin.ModelAdmin):
 
 # Simple ModelAdmins
 
-
+admin.site.register(models.PlaceType, GenericAdminView)
+admin.site.register(models.Place, GenericAdminView)
 admin.site.register(models.Gender, GenericAdminView)
 admin.site.register(models.AgentRole, GenericAdminView)
-admin.site.register(models.Place, GenericAdminView)
 admin.site.register(models.Language, GenericAdminView)
 admin.site.register(models.TextType, GenericAdminView)
+admin.site.register(models.TextualFeatures, GenericAdminView)
 admin.site.register(models.FormatOfPublication, GenericAdminView)
 admin.site.register(models.Subject, GenericAdminView)
-admin.site.register(models.PrimarySource, GenericAdminView)
-admin.site.register(models.SecondarySource, GenericAdminView)
+admin.site.register(models.Relationships, GenericAdminView)
 
 
 # Custom ModelAdmins
@@ -122,61 +122,58 @@ class TextAdminView(GenericAdminView):
     )
     list_filter = (
         'published',
-        'type',
+        'text_type',
         'format_of_publication',
-        'subject',
     )
     fieldsets = (
         ('', {
             'fields': (
+                'estc',
+                'stc',
+                'ustc',
                 'title',
                 'author',
             )
         }),
         ('Publication Information', {
             'fields': (
-                'translator',
+                'translators',
                 'other_contributors',
-                'place',
+                'imprint',
+                'place_of_publication',
                 'false_imprint',
-                'address_of_publication',
-                'associated_location',
-                'publisher',
+                'publishers',
                 'year_of_publication',
-                'specific_date',
+                'associated_date',
+                'associated_locations',
                 'lost_book',
             )
         }),
         ('Properties', {
             'fields': (
                 'languages',
-                'multilingual',
-                'translation',
-                'type',
+                'number_of_languages',
+                'text_type',
                 'format_of_publication',
                 'number_of_issues',
                 'pagination',
-                'number_of_main_text_pages',
-                'number_of_liminary_pages',
                 'number_of_pages_containing_french',
-                'dedicatee',
-                'illustrations',
-                'nelson_and_seccombe',
-                'plre'
+                'textual_features',
+                'dedicatees',
             )
         }),
         ('Bibliographical Information', {
             'fields': (
-                'stc',
-                'estc',
-                'ustc',
-                'fb_number',
+                'fb',
                 'rccc',
+                'nelson_and_seccombe',
+                'stationers_register',
+                'plre',
+                'owners',
                 'full_text_image',
                 'full_text_transcription',
-                'subject',
-                'primary_sources',
-                'secondary_sources',
+                'subjects',
+                'relationships',
                 'number_of_surviving_copies_in_uk',
                 'number_of_surviving_copies_in_continental_europe',
                 'number_of_surviving_copies_in_rest_of_world'

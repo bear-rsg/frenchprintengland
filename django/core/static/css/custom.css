@@ -567,6 +567,11 @@ select option,
 
 /* ---------- Research Data: Detail ---------- */
 
+.viewinadmindashboard-link-container {
+    text-align: right;
+    margin-bottom: 2em;
+}
+
 .viewinadmindashboard-link {
     display: inline-block;
     padding: 0.3em 1em;
