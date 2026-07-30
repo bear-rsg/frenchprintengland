@@ -149,7 +149,7 @@ class Text(models.Model):
     full_text_transcription = models.CharField(max_length=1000, blank=True, null=True, verbose_name='full-text - transcription')
     subjects = models.ManyToManyField(Subject, related_name=related_name, blank=True)
     relationships = models.ManyToManyField(Relationships, related_name=related_name, blank=True)
-    number_of_surviving_copies_in_uk = models.IntegerField(blank=True, null=True, 
+    number_of_surviving_copies_in_uk = models.IntegerField(blank=True, null=True,
                                                            verbose_name='Number of surviving copies in UK and Ireland')
     number_of_surviving_copies_in_continental_europe = models.IntegerField(blank=True, null=True, verbose_name='Number of Surviving Copies in Continental Europe')
     number_of_surviving_copies_in_rest_of_world = models.IntegerField(blank=True, null=True)
