@@ -147,11 +147,11 @@ class TextDetailView(DetailView):
             {'label': 'STC', 'value': self.object.stc},
             {'label': 'USTC', 'value': self.object.ustc},
             {'label': 'Author', 'value': self.object.author},
+            {'label': 'Translators', 'value': queryset_as_str(self.object.translators.all())},
+            {'label': 'Other contributors', 'value': queryset_as_str(self.object.other_contributors.all())},
 
             # Publication Information
             {'section_header': 'Publication Information'},
-            {'label': 'Translators', 'value': queryset_as_str(self.object.translators.all())},
-            {'label': 'Other contributors', 'value': queryset_as_str(self.object.other_contributors.all())},
             {'label': 'Imprint', 'value': self.object.imprint},
             {'label': 'Place of publication', 'value': self.object.place_of_publication},
             {'label': 'False imprint', 'value': self.object.false_imprint},
@@ -169,7 +169,6 @@ class TextDetailView(DetailView):
             {'label': 'Format_of_publication', 'value': self.object.format_of_publication},
             {'label': 'Number_of_issues', 'value': self.object.number_of_issues},
             {'label': 'Pagination', 'value': self.object.pagination},
-            {'label': 'Number of pages containing French', 'value': self.object.number_of_pages_containing_french},
             {'label': 'Textual features', 'value': queryset_as_str(self.object.textual_features.all())},
             {'label': 'Dedicatees', 'value': queryset_as_str(self.object.dedicatees.all())},
 
