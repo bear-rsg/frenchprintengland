@@ -86,6 +86,9 @@ class TextType(SimpleModelAbstract):
 class TextualFeatures(SimpleModelAbstract):
     """ Features of a text """
 
+    class Meta:
+        verbose_name_plural = 'textual features'
+
 
 class FormatOfPublication(SimpleModelAbstract):
     """ Format of publication, e.g. 4to, 8to """
@@ -97,6 +100,9 @@ class Subject(SimpleModelAbstract):
 
 class Relationships(SimpleModelAbstract):
     """ Relationships of a text """
+
+    class Meta:
+        verbose_name_plural = 'relationships'
 
 
 # 2. Primary Models
@@ -114,10 +120,10 @@ class Text(models.Model):
     ustc = models.CharField(max_length=1000, blank=True, null=True, verbose_name='USTC')
     title = models.TextField()
     author = models.ForeignKey(Agent, related_name=f'{related_name}_authors', on_delete=models.SET_NULL, blank=True, null=True)
-
-    # Publication Information
     translators = models.ManyToManyField(Agent, related_name=f'{related_name}_translators', blank=True)
     other_contributors = models.ManyToManyField(Agent, related_name=f'{related_name}_othercontributors', blank=True)
+
+    # Publication Information
     imprint = models.TextField(blank=True, null=True)
     place_of_publication = models.ForeignKey(Place, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
     false_imprint = models.BooleanField(default=False)
@@ -134,7 +140,6 @@ class Text(models.Model):
     format_of_publication = models.ForeignKey(FormatOfPublication, related_name=related_name, on_delete=models.SET_NULL, blank=True, null=True)
     number_of_issues = models.IntegerField(blank=True, null=True)
     pagination = models.CharField(max_length=1000, blank=True, null=True)
-    number_of_pages_containing_french = models.IntegerField(blank=True, null=True, verbose_name='Number of pages containing French')
     textual_features = models.ManyToManyField(TextualFeatures, related_name=f'{related_name}_dedicatees', blank=True)
     dedicatees = models.ManyToManyField(Agent, related_name=f'{related_name}_dedicatees', blank=True)
 

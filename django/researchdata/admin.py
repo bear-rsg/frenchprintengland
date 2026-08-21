@@ -133,12 +133,12 @@ class TextAdminView(GenericAdminView):
                 'ustc',
                 'title',
                 'author',
+                'translators',
+                'other_contributors',
             )
         }),
         ('Publication Information', {
             'fields': (
-                'translators',
-                'other_contributors',
                 'imprint',
                 'place_of_publication',
                 'false_imprint',
@@ -157,7 +157,6 @@ class TextAdminView(GenericAdminView):
                 'format_of_publication',
                 'number_of_issues',
                 'pagination',
-                'number_of_pages_containing_french',
                 'textual_features',
                 'dedicatees',
             )
