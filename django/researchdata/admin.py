@@ -108,6 +108,7 @@ class TextAdminView(GenericAdminView):
     list_display = (
         'id',
         'title',
+        'year_of_publication',
         'author',
         'record_date_created',
         'record_date_updated',

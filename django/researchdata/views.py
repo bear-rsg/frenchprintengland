@@ -144,7 +144,7 @@ class TextDetailView(DetailView):
         # Details
         context['details'] = [
             {'label': 'ESTC', 'value': self.object.estc},
-            {'label': 'STC', 'value': self.object.stc},
+            {'label': 'STC/Wing', 'value': self.object.stc},
             {'label': 'USTC', 'value': self.object.ustc},
             {'label': 'Author', 'value': self.object.author},
             {'label': 'Translators', 'value': queryset_as_str(self.object.translators.all())},
@@ -166,8 +166,8 @@ class TextDetailView(DetailView):
             {'label': 'Languages', 'value': queryset_as_str(self.object.languages.all())},
             {'label': 'Number of languages', 'value': self.object.number_of_languages},
             {'label': 'Type', 'value': self.object.text_type},
-            {'label': 'Format_of_publication', 'value': self.object.format_of_publication},
-            {'label': 'Number_of_issues', 'value': self.object.number_of_issues},
+            {'label': 'Format of publication', 'value': self.object.format_of_publication},
+            {'label': 'Number of issues', 'value': self.object.number_of_issues},
             {'label': 'Pagination', 'value': self.object.pagination},
             {'label': 'Textual features', 'value': queryset_as_str(self.object.textual_features.all())},
             {'label': 'Dedicatees', 'value': queryset_as_str(self.object.dedicatees.all())},
@@ -284,18 +284,18 @@ class TextListView(ListView):
             },
             {
                 'filter_id': f'{filter_pre_fk}translators',
-                'filter_name': 'Translators',
+                'filter_name': 'Translator',
                 'filter_options': models.Agent.objects.filter(roles__name__iexact='translator').distinct()
             },
             {
-                'filter_id': f'{filter_pre_fk}place_of_publication',
-                'filter_name': 'Place of Publication',
+                'filter_id': f'{filter_pre_mm}associated_locations',
+                'filter_name': 'Associated Location',
                 'filter_options': models.Place.objects.all()
             },
             {
-                'filter_id': f'{filter_pre_fk}text_type',
-                'filter_name': 'Type',
-                'filter_options': models.TextType.objects.all()
+                'filter_id': f'{filter_pre_mm}subjects',
+                'filter_name': 'Subject',
+                'filter_options': models.Subject.objects.all()
             },
             {
                 'filter_id': f'{filter_pre_fk}format_of_publication',
@@ -304,17 +304,17 @@ class TextListView(ListView):
             },
             {
                 'filter_id': f'{filter_pre_mm}publishers',
-                'filter_name': 'Publishers',
+                'filter_name': 'Publisher',
                 'filter_options': models.Agent.objects.filter(roles__name__iexact='publisher').distinct()
             },
             {
                 'filter_id': f'{filter_pre_mm}languages',
-                'filter_name': 'Languages',
+                'filter_name': 'Language',
                 'filter_options': models.Language.objects.all()
             },
             {
-                'filter_id': f'{filter_pre_mm}dedicatee',
-                'filter_name': 'Dedicatees',
+                'filter_id': f'{filter_pre_mm}dedicatees',
+                'filter_name': 'Dedicatee',
                 'filter_options': models.Agent.objects.filter(roles__name__iexact='dedicatee').distinct()
             },
         ]
