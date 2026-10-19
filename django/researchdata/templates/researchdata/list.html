@@ -50,9 +50,8 @@
                 <!-- Sort by -->
                 <select id="list-options-sort-by" name="sort_by">
                         <option value="title">Title</option>
-                        <option value="number_of_main_text_pages">Number of main text pages</option>
-                        <option value="number_of_liminary_pages">Number of liminary pages</option>
-                        <option value="record_date_created">Date added to database</option>
+                        <option value="author__name">Author</option>
+                        <option value="year_of_publication">Year of publication</option>
                 </select>
                 <!-- Sort direction -->
                 <select id="list-options-sort-direction" name="sort_direction">
@@ -104,6 +103,13 @@
                             <span>{{ object.place }}</span>
                         </div>
                     {% endif %}
+                    {% if object.year_of_publication %}
+                        <div>
+                            <label>Year of publication:</label>
+                            <span>{{ object.year_of_publication }}</span>
+                        </div>
+                    {% endif %}
+                    
                 </div>
             </a>
             <!-- Search Meta -->
