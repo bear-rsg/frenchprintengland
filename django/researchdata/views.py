@@ -184,7 +184,7 @@ class TextDetailView(DetailView):
             {'label': 'Full text transcription', 'value': self.object.full_text_transcription},
             {'label': 'Subjects', 'value': queryset_as_str(self.object.subjects.all())},
             {'label': 'Relationships', 'value': queryset_as_str(self.object.relationships.all())},
-            {'label': 'Number of surviving copies in UK', 'value': self.object.number_of_surviving_copies_in_uk},
+            {'label': 'Number of surviving copies in UK and Ireland', 'value': self.object.number_of_surviving_copies_in_uk},
             {'label': 'Number of surviving copies in continental Europe', 'value': self.object.number_of_surviving_copies_in_continental_europe},
             {'label': 'Number of surviving copies in rest of the world', 'value': self.object.number_of_surviving_copies_in_rest_of_world},
         ]
